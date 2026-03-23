@@ -1,7 +1,7 @@
 """
 chap05/app/app.py
 ======================
-第5章 総仕上げ演習（演習5-2）：Streamlit で動かす記事生成 AI エージェント
+第5章 総仕上げ演習（演習5-2）：Streamlit で動かす記事生成 AI エージェント (【演習用ファイル】)
 Cloud Shell での実行を想定した Web UI アプリケーション
 """
 
@@ -40,40 +40,18 @@ def get_api_keys() -> tuple[str, str]:
 def build_supervisor_agent():
     """マルチエージェントシステムを構築して返す（初回のみ）"""
 
-    # ─── サブエージェント ───
-    research_agent = create_agent(
-        model="openai:gpt-4o",
-        tools=[],
-        system_prompt=(
-            "あなたはリサーチの専門家です。\n"
-            "与えられたトピックについて、重要なポイントを3〜5つ箇条書きでまとめてください。\n"
-            "事実に基づいた正確な情報を提供してください。"
-        ),
-    )
+        # ─── サブエージェント ───
+    # TODO: リサーチを担当するエージェント (research_agent) を作成してください。
+    # 役割: 与えられたトピックについて、重要なポイントを3〜5つ箇条書きでまとめる
+    research_agent = None
 
-    writer_agent = create_agent(
-        model="openai:gpt-4o",
-        tools=[],
-        system_prompt=(
-            "あなたはテクノロジー分野のプロのライターです。\n"
-            "提供されたリサーチ情報をもとに、一般のビジネスパーソン向けの\n"
-            "わかりやすい記事（300〜500文字）を執筆してください。\n"
-            "見出し、本文の構成を工夫して、読みやすい文章にしてください。"
-        ),
-    )
+    # TODO: 執筆を担当するエージェント (writer_agent) を作成してください。
+    # 役割: 提供されたリサーチ情報をもとに、一般向けのわかりやすい記事（300〜500文字）を執筆する
+    writer_agent = None
 
-    validator_agent = create_agent(
-        model="openai:gpt-4o",
-        tools=[],
-        system_prompt=(
-            "あなたはコンテンツレビューの専門家です。\n"
-            "提供された記事を以下の観点でレビューし、スコアとフィードバックを提供してください：\n"
-            "1. 正確性（情報は正しいか）: /10\n"
-            "2. 読みやすさ（文章は明瞭か）: /10\n"
-            "3. 完成度（構成・内容は十分か）: /10\n"
-            "最後に総合スコアと改善提案を述べてください。"
-        ),
-    )
+    # TODO: 検証を担当するエージェント (validator_agent) を作成してください。
+    # 役割: 提供された記事を正確性・読みやすさ・完成度の観点でレビューし、スコアと改善提案を返す
+    validator_agent = None
 
     # ─── サブエージェントをツールとしてラップ ───
     @tool
@@ -83,10 +61,8 @@ def build_supervisor_agent():
         Args:
             topic: リサーチするトピック
         """
-        result = research_agent.invoke(
-            {"messages": [{"role": "user", "content": f"以下のトピックについてリサーチしてください：{topic}"}]}
-        )
-        return result["messages"][-1].content
+        # TODO: research_agent を invoke して結果を返してください
+        pass
 
     @tool
     def write_article(research_result: str, topic: str) -> str:
@@ -96,21 +72,8 @@ def build_supervisor_agent():
             research_result: リサーチ結果
             topic: 記事のトピック
         """
-        result = writer_agent.invoke(
-            {
-                "messages": [
-                    {
-                        "role": "user",
-                        "content": (
-                            f"トピック: {topic}\n\n"
-                            f"リサーチ結果:\n{research_result}\n\n"
-                            "上記の情報をもとに記事を執筆してください。"
-                        ),
-                    }
-                ]
-            }
-        )
-        return result["messages"][-1].content
+        # TODO: writer_agent を invoke して結果を返してください
+        pass
 
     @tool
     def validate_article(article: str) -> str:
@@ -119,29 +82,13 @@ def build_supervisor_agent():
         Args:
             article: チェックする記事の本文
         """
-        result = validator_agent.invoke(
-            {
-                "messages": [
-                    {"role": "user", "content": f"以下の記事をレビューしてください：\n\n{article}"}
-                ]
-            }
-        )
-        return result["messages"][-1].content
+        # TODO: validator_agent を invoke して結果を返してください
+        pass
 
     # ─── Supervisor エージェント ───
-    supervisor = create_agent(
-        model="openai:gpt-4o",
-        tools=[research, write_article, validate_article],
-        system_prompt=(
-            "あなたはコンテンツ制作チームのスーパーバイザーです。\n"
-            "ユーザーからトピックが与えられたら、以下のステップで記事制作を管理してください：\n"
-            "1. research ツールでトピックをリサーチする\n"
-            "2. write_article ツールでリサーチ結果をもとに記事を執筆する\n"
-            "3. validate_article ツールで記事の品質をチェックする\n"
-            "4. 最終的な記事と品質レポートをまとめてユーザーに提示する\n"
-            "日本語で回答してください。"
-        ),
-    )
+    # TODO: チームを管理する Supervisor エージェント (supervisor) を作成してください。
+    # 回答は必ず日本語で行い、research, write_article, validate_article ツールを持つように設定してください
+    supervisor = None
 
     return supervisor
 
